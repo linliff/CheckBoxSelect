@@ -2,6 +2,8 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="60dp"
+    android:id="@+id/item_layout"
+    android:descendantFocusability="blocksDescendants"
     android:gravity="center_vertical"
     android:orientation="horizontal">
 
@@ -9,7 +11,6 @@
         android:id="@+id/checkbox"
         android:layout_width="40dp"
         android:visibility="visible"
-        android:focusable="false"
         android:layout_height="40dp" />
 
     <Button
@@ -18,6 +19,7 @@
         android:layout_height="wrap_content"
         android:layout_marginLeft="10dp"
         android:padding="5dp"
+        android:focusable="false"
         android:text="itemClick"
         android:textSize="15sp" />
 
@@ -27,6 +29,7 @@
         android:layout_height="wrap_content"
         android:layout_marginLeft="10dp"
         android:padding="5dp"
+        android:focusable="false"
         android:text="itemLongClick"
         android:textSize="15sp" />
 

@@ -22,7 +22,6 @@ public class RecyclerViewActivity extends AppCompatActivity implements RecyclerV
     private CheckBox selectAll;
     private TextView selectNum;
     private List<Bean> mData;
-    private int checkNum;
     private RecyclerViewAdapter checkBoxAdapter;
 
     @Override
@@ -56,13 +55,13 @@ public class RecyclerViewActivity extends AppCompatActivity implements RecyclerV
     @Override
     public void onItemClick(View view, int position) {
         int id = view.getId();
-
+        Bean bean = mData.get(position);
         switch (id){
-            case R.layout.item_view:
-                Toast.makeText(RecyclerViewActivity.this , "itemClick" ,Toast.LENGTH_SHORT).show();
+            case R.id.item_layout:
+                Toast.makeText(RecyclerViewActivity.this ,  bean.getName()+"itemClick" ,Toast.LENGTH_SHORT).show();
                 break;
             case R.id.button1:
-                Toast.makeText(RecyclerViewActivity.this , "button1Click" ,Toast.LENGTH_SHORT).show();
+                Toast.makeText(RecyclerViewActivity.this , bean.getName() +"button1Click" ,Toast.LENGTH_SHORT).show();
                 break;
         }
 
@@ -71,47 +70,28 @@ public class RecyclerViewActivity extends AppCompatActivity implements RecyclerV
 
     @Override
     public void onItemLongClick(View view, int position) {
-        Toast.makeText(RecyclerViewActivity.this , "button2Click" ,Toast.LENGTH_SHORT).show();
+        Bean bean = mData.get(position);
+        Toast.makeText(RecyclerViewActivity.this ,bean.getName() + "button2Click" ,Toast.LENGTH_SHORT).show();
     }
 
     @Override
     public void onCheck(View view, int position, boolean isChecked) {
-//        Bean bean = mData.get(position);
-//        bean.setChecked(isChecked);
-//        if (isChecked) {
-//            checkNum ++;
-//        }else {
-//            checkNum --;
-//            selectAll.setChecked(false);
-//        }
-//        //checkBoxAdapter.initData();
-//        //checkBoxAdapter.notifyDataSetChanged();
-//        selectNum.setText(checkNum+"");
-//        Log.e("linli111f" , checkNum+"");
-//        Log.e("linli111f" , bean.getName()+bean.isChecked());
+        Bean bean = mData.get(position);
+        checkBoxAdapter.initData(bean ,isChecked);
+        selectNum.setText(checkBoxAdapter.getSelected()+"");
 
-        Log.e("linli111f" , "fuck");
     }
 
     @Override
     public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-        for (Bean data : mData ){
-            data.setChecked(isChecked);
-        }
-        //checkBoxAdapter.initData();
-        checkBoxAdapter.notifyDataSetChanged();
-        if (isChecked){
-            selectNum.setText(mData.size()+"");
-            Log.e("linlif" , mData.size()+"");
-        }else {
-            selectNum.setText("0");
-        }
+        checkBoxAdapter.selectedInit(isChecked);
+        selectNum.setText(mData.size()+"");
     }
 }
 
 class Bean{
     private String name;
-    private boolean isChecked;
+    private boolean isChecked;//实际没用到
 
     public Bean(String s, boolean b) {
         this.name =s;

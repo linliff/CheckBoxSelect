@@ -1,6 +1,7 @@
 package com.linlif.checkboxselect;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,39 +11,53 @@ import android.widget.CheckBox;
 import android.widget.CompoundButton;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 /**
  * Created by lin on 2017/1/8.
  */
-public class ListViewAdapter extends BaseAdapter{
+public class ListViewAdapter<T> extends BaseAdapter{
 
     private Context mContext;
-    protected List<Bean> mData;
-    private List<Type> typeList = new ArrayList<>();
+    protected List<T> mData;
+    private HashMap<T, Boolean> hashMap ;
 
-
-    //构造方法
-    public ListViewAdapter(Context context, List<Bean> data) {
-        //成员变量进行赋值
+    public ListViewAdapter(Context context, List<T> data) {
         this.mContext = context;
         this.mData = data;
-        initData();
+        selectedInit(false);
     }
 
-    public void initData() {
-        typeList.clear();
-        for (Bean enlist : mData) {
-            Type type = null;
-            if (enlist.isChecked()) {
-                type = Type.Checked;
-            } else {
-                type = Type.UnCheck;
-            }
-            typeList.add(type);
+
+    //初始化 默认为False
+    public void selectedInit(Boolean selected){
+        if(hashMap == null)
+            hashMap = new HashMap<T, Boolean>();
+        for(T t : mData){
+            hashMap.put(t, selected);
+
         }
-
+        notifyDataSetChanged();
     }
+
+    public int getSelected(){
+        int i = 0;
+        for (T enlist : mData){
+            if (hashMap.get(enlist) ){
+                i++;
+            }
+        }
+        return i;
+    }
+
+    public void initData(T data ,Boolean selected) {
+        hashMap.put(data ,selected);
+        //notifyDataSetChanged();
+    }
+
+
+
     private ListItemButtonClickListener mOnItemClickListener;
 
     public void setOnListItemClickListener(ListItemButtonClickListener listener) {
@@ -95,23 +110,18 @@ public class ListViewAdapter extends BaseAdapter{
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 mOnItemClickListener.onCheck(buttonView ,position ,isChecked);
-                if (isChecked) {
-                    typeList.set(position, Type.Checked);
-                } else {
-                    typeList.set(position, Type.UnCheck);
-                }
+                hashMap.put(mData.get(position), isChecked);
             }
         });
 
-        if (typeList.get(position) == Type.Checked) {
-            holder.select.setChecked(true);
-        } else if (typeList.get(position) == Type.UnCheck) {
-            holder.select.setChecked(false);
-        } else {
-            holder.select.setChecked(false);
-        }
+       if (hashMap.get(mData.get(position))){
+           holder.select.setChecked(true);
+       }else{
+           holder.select.setChecked(false);
+       }
         return convertView;
     }
+
 
     public interface ListItemButtonClickListener {
         void onItemClick(View view, int position);
@@ -119,10 +129,6 @@ public class ListViewAdapter extends BaseAdapter{
         void onCheck(View view, int position, boolean isChecked);
     }
 
-
-    public enum Type {
-        Checked, UnCheck
-    }
 }
 
 class ViewHolder  {

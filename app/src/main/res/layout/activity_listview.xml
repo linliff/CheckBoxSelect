@@ -9,9 +9,8 @@
     <ListView
         android:id="@+id/list_item"
         android:layout_width="match_parent"
-        android:layout_weight="1"
-        android:layout_height="0dp">
-
+        android:layout_height="0dp"
+        android:layout_weight="1">
     </ListView>
 
     <LinearLayout
@@ -31,10 +30,10 @@
             android:id="@+id/modify"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:onClick="modify"
-            android:visibility="gone"
             android:gravity="center_vertical"
-            android:text="编辑" />
+            android:onClick="modify"
+            android:text="编辑"
+            android:visibility="gone" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -55,8 +54,7 @@
             android:layout_height="match_parent"
             android:layout_marginLeft="5dp"
             android:gravity="center_vertical"
-            android:text="fuck"
-             />
+            android:text="fuck" />
 
 
     </LinearLayout>

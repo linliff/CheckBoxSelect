@@ -3,102 +3,104 @@ package com.linlif.checkboxselect;
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.RecyclerView.ViewHolder;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
+import android.widget.LinearLayout;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 public class RecyclerViewAdapter extends RecyclerView.Adapter<MyViewHolder>{
 	
     private Context mContext;
     protected List<Bean> mData;
-    private List<Type> typeList = new ArrayList<>();
+    private HashMap<Bean, Boolean> hashMap ;
 
-    //构造方法
     public RecyclerViewAdapter(Context context, List<Bean> data) {
-        //成员变量进行赋值
         this.mContext = context;
         this.mData = data;
-        //initData();
+        selectedInit(false);
     }
+     //初始化 默认为False
+    public void selectedInit(Boolean selected){
+        if(hashMap == null)
+            hashMap = new HashMap<Bean, Boolean>();
+        for(Bean t : mData){
+            hashMap.put(t, selected);
 
-    public void initData() {
-        typeList.clear();
-        for (Bean enlist : mData) {
-            Type type = null;
-            if (enlist.isChecked()) {
-                type = Type.Checked;
-            } else {
-                type = Type.UnCheck;
-            }
-            typeList.add(type);
         }
-
+        notifyDataSetChanged();
     }
+
+    public int getSelected(){
+        int i = 0;
+        for (Bean enlist : mData){
+            if (hashMap.get(enlist) ){
+                i++;
+            }
+        }
+        return i;
+    }
+
+    public void initData(Bean data ,Boolean selected) {
+        hashMap.put(data ,selected);
+        //notifyDataSetChanged();
+    }
+
     public interface OnItemClickListener {
         void onItemClick(View view, int position);
         void onItemLongClick(View view, int position);
         void onCheck(View view, int position, boolean isChecked);
     }
 
-    private OnItemClickListener mOnItemClickListener;
+    public OnItemClickListener mOnItemClickListener;
 
     public void setOnItemClickListener(OnItemClickListener listener) {
         this.mOnItemClickListener = listener;
     }
 
-    /*
-            创建ViewHolder
-     */
+
+    //创建ViewHolder
     @Override
     public MyViewHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
 
         View view = LayoutInflater.from(mContext).inflate(R.layout.item_view, viewGroup, false);
-        MyViewHolder myViewHolder = new MyViewHolder(view);
+        MyViewHolder myViewHolder = new MyViewHolder(view,mOnItemClickListener);
+
         return myViewHolder;
     }
     
-    /*
-            绑定ViewHolder的数据
-     */
+    //绑定ViewHolder的数据
     @Override
     public void onBindViewHolder(final MyViewHolder myViewHolder, final int pos) {
 
-        myViewHolder.select.setChecked(mData.get(pos).isChecked());
-
         if (mOnItemClickListener != null) {
-
             myViewHolder.select.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                 @Override
                 public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                     int layoutPosition = myViewHolder.getLayoutPosition();
-
                     mOnItemClickListener.onCheck(myViewHolder.select ,layoutPosition ,isChecked);
-//                    if (isChecked) {
-//                        typeList.set(layoutPosition, Type.Checked);
-//                    } else {
-//                        typeList.set(layoutPosition, Type.UnCheck);
-//                    }
+                    hashMap.put(mData.get(pos), isChecked);
+
                 }
             });
-
-            myViewHolder.itemView.setOnClickListener(new View.OnClickListener() {
+            myViewHolder.item_layout.setClickable(true);
+            myViewHolder.item_layout.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    int layoutPosition = myViewHolder.getLayoutPosition();
                     mOnItemClickListener.onItemClick(v, pos);
                 }
             });
             myViewHolder.button1.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    int layoutPosition = myViewHolder.getLayoutPosition();
-                    mOnItemClickListener.onItemClick(myViewHolder.button1, layoutPosition);
+                    mOnItemClickListener.onItemClick(myViewHolder.button1, pos);
                 }
             });
 
@@ -106,11 +108,17 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<MyViewHolder>{
             myViewHolder.button2.setOnLongClickListener(new View.OnLongClickListener() {
                 @Override
                 public boolean onLongClick(View v) {
-                    int layoutPosition = myViewHolder.getLayoutPosition();
-                    mOnItemClickListener.onItemLongClick(myViewHolder.button2, layoutPosition);
+                    mOnItemClickListener.onItemLongClick(myViewHolder.button2, pos);
                     return false;
                 }
             });
+
+            //注意先后顺序
+            if (hashMap.get(mData.get(pos))){
+                myViewHolder.select.setChecked(true);
+            }else{
+                myViewHolder.select.setChecked(false);
+            }
         }
     }
     
@@ -119,23 +127,23 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<MyViewHolder>{
 		return mData.size();
 	}
 
-    public enum Type {
-        Checked, UnCheck
-    }
-	
 }
 
 
-class MyViewHolder extends ViewHolder {
+class MyViewHolder extends ViewHolder{
 
     CheckBox select;
     Button button1;
-     Button button2;
-    public MyViewHolder(View view) {
+    Button button2;
+    LinearLayout item_layout;
+    RecyclerViewAdapter.OnItemClickListener mOnItemClickListener;
+    public MyViewHolder(View view , RecyclerViewAdapter.OnItemClickListener  mOnItemClickListener) {
         super(view);
+        this.mOnItemClickListener = mOnItemClickListener;
         select = (CheckBox) view.findViewById(R.id.checkbox);
         button1 = (Button) view.findViewById(R.id.button1);
         button2 = (Button) view.findViewById(R.id.button2);
+        item_layout = (LinearLayout) view.findViewById(R.id.item_layout);
     }
 
 

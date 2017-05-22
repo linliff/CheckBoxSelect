@@ -23,7 +23,6 @@ public class ListViewActivity extends AppCompatActivity implements AdapterView.O
     private CheckBox selectAll;
     private TextView selectNum;
     private List<Bean> mData;
-    private int checkNum;
     private ListViewAdapter listViewAdapter;
 
     @Override
@@ -50,19 +49,8 @@ public class ListViewActivity extends AppCompatActivity implements AdapterView.O
 
     @Override
     public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-
-        for (Bean en : mData) {
-            en.setChecked(isChecked);
-        }
-        listViewAdapter.initData();
-        listViewAdapter.notifyDataSetChanged();
-        if (isChecked) {
-            int num = mData.size();
-            selectNum.setText(num + "");
-            Log.e("linlif" , num+"");
-        } else {
-            selectNum.setText(0 + "");
-        }
+        listViewAdapter.selectedInit(isChecked);
+        selectNum.setText(mData.size()+"");
 
     }
 
@@ -81,20 +69,14 @@ public class ListViewActivity extends AppCompatActivity implements AdapterView.O
     @Override
     public void onCheck(View view, int position, boolean isChecked) {
         Bean bean = mData.get(position);
-        bean.setChecked(isChecked);
-        if (isChecked) {
-            checkNum ++;
-        }else {
-            checkNum --;
-        }
-        listViewAdapter.initData();
-        listViewAdapter.notifyDataSetChanged();
-        selectNum.setText(checkNum+"");
+        listViewAdapter.initData(bean ,isChecked);
+        selectNum.setText(listViewAdapter.getSelected()+"");
     }
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         Bean bean = mData.get(position);
+        Log.e("linlifff", "itemclick");
         Toast.makeText(ListViewActivity.this , bean.getName()+"item" ,Toast.LENGTH_SHORT).show();
     }
 }
