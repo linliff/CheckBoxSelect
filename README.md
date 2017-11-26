@@ -1,0 +1,2 @@
+# CheckBoxSelect
+根据android自带的checkout组件和listview、recycleView结合完成全选、多选的功能
